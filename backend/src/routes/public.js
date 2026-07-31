@@ -45,8 +45,10 @@ router.post('/santri/search', async (req, res) => {
   );
 
   const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
-  const remaining = Math.max(0, period.feeamount - totalPaid);
-  const paymentStatus = totalPaid <= 0 ? 'BELUM BAYAR' : totalPaid >= period.feeamount ? 'LUNAS' : 'DP';
+  const multiplier = homecoming?.plan === 'PULANG PERGI' ? 2 : 1;
+  const totalFee = period.feeamount * multiplier;
+  const remaining = Math.max(0, totalFee - totalPaid);
+  const paymentStatus = totalPaid <= 0 ? 'BELUM BAYAR' : totalPaid >= totalFee ? 'LUNAS' : 'DP';
 
   res.json({
     studentName: student.name,
@@ -57,7 +59,8 @@ router.post('/santri/search', async (req, res) => {
     departureDate: homecoming?.departuredate || period.startdate,
     mandatoryReturnDate: homecoming?.mandatoryreturndate || period.returndeadlinedate,
     actualReturnDate: homecoming?.actualreturndate || null,
-    feeAmount: period.feeamount,
+    feeAmount: totalFee,
+    baseFee: period.feeamount,
     totalPaid,
     remainingFee: remaining,
     paymentStatus

@@ -78,7 +78,7 @@ export default function AdminDashboardPage() {
     fetchData(p.id);
   };
 
-  const akanPulang = homecomings.filter(h => h.plan === 'AKAN PULANG').length;
+  const akanPulang = homecomings.filter(h => h.plan !== 'TIDAK PULANG').length;
   const tidakPulang = homecomings.filter(h => h.plan === 'TIDAK PULANG').length;
   const totalSantri = students.length;
 
@@ -94,9 +94,14 @@ export default function AdminDashboardPage() {
 
   const perluBayar = students.filter(s => {
     const hc = homecomingMap[s.id];
-    return !hc || hc.plan !== 'TIDAK PULANG';
+    return hc ? hc.plan !== 'TIDAK PULANG' : true;
   });
-  const lunas = perluBayar.filter(s => (studentPaymentMap[s.id] || 0) >= (activePeriod?.feeAmount || 0)).length;
+  const lunas = perluBayar.filter(s => {
+    const paid = studentPaymentMap[s.id] || 0;
+    const hc = homecomingMap[s.id];
+    const multiplier = hc?.plan === 'PULANG PERGI' ? 2 : 1;
+    return paid >= (activePeriod?.feeAmount || 0) * multiplier;
+  }).length;
   const belumLunas = perluBayar.length - lunas;
 
   if (loading) {
