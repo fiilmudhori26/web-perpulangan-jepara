@@ -1,0 +1,6 @@
+{
+  "name": "SantriFlow",
+  "description": "Aplikasi Manajemen Perpulangan, Pembayaran, dan Keuangan Pondok Pesantren",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
